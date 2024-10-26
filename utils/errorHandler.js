@@ -1,9 +1,6 @@
-// utils/errorHandler.js
-
 const errorHandler = (err, req, res, next) => {
-    console.error(err.stack); // Log the error stack for debugging
+    console.error(err.stack); 
   
-    // Respond with a generic error message
     res.status(500).json({
       success: false,
       message: 'Something went wrong!',
