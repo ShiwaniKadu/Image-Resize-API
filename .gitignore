@@ -1,0 +1,6 @@
+# .gitignore
+
+uploads/
+resized/
+node_modules/
+.env
