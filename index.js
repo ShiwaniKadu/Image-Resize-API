@@ -1,39 +1,35 @@
-require('dotenv').config();
-
-const express = require('express');
+const fs = require('fs');
+const path = require('path');
 const sharp = require('sharp');
-const cors = require('cors');
-const formidable = require('formidable');
 
-const app = express();
-app.use(cors());
-app.use(express.json());
+let directory_name = 'images';
 
-app.post('/file', (req, res, next) => {
-	const form = formidable();
-	form.parse(req, async (err, fields, files) => {
-		if (err) {
-			return next(err); 
-		}
-		try {
-			const imageInput = files.image.path;
-			const contentType = files.image.type;
+let filenames = fs.readdirSync(directory_name);
 
-			const data = await sharp(imageInput)
-				.resize(512, 512)
-				.png()
-				.toBuffer();
-			
-			const base64Data = data.toString('base64');
-			res.status(202).json({ b64Data: base64Data, contentType: contentType, extension: 'png' });
-		} catch (error) {
-			console.error(error);
-			res.status(500).json({ error: 'An error occurred while processing the image.' });
-		}
-	});
+filenames.forEach((file) => {
+  const fileFormat = getExtension(file);
+  if (fileFormat === 'svg') {
+    console.log('svg not processed with sharp');
+    return;
+  }
+
+  let sh = sharp('./images/' + file);
+  if (fileFormat === 'jpg' || fileFormat === 'jpeg') {
+    sh = sh.jpeg({ quality: 70 });
+  } else if (fileFormat === 'png') {
+    sh = sh.png({ quality: 70 });
+  }
+
+  sh.toFile('output/' + file, function (err, info) {
+    console.log(info);
+    if (err) {
+      console.log('error in image optimization');
+      return;
+    }
+  });
 });
 
-const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => {
-	console.log(`Server is running on port ${PORT}`);
-});
+function getExtension(filename) {
+  let ext = path.extname(filename || '').split('.');
+  return ext[ext.length - 1];
+}
