@@ -30,9 +30,12 @@ A simple RESTful API for resizing images using Node.js, Express, and Sharp. This
     ```
 3.Start the server:
 
-   ```bash
-   npm start
-   ```
+    ```bash
+    npm start
+    ```
+The server will run on http://localhost:4000.
+
+
 
 
 
